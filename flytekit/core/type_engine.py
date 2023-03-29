@@ -629,6 +629,7 @@ class ProtobufTransformer(TypeTransformer[Message]):
         return f"{expected_python_type.__module__}.{expected_python_type.__name__}"
 
     def get_literal_type(self, t: Type[T]) -> LiteralType:
+        return 0
         return LiteralType(simple=SimpleType.STRUCT, metadata={ProtobufTransformer.PB_FIELD_KEY: self.tag(t)})
 
     def to_literal(self, ctx: FlyteContext, python_val: T, python_type: Type[T], expected: LiteralType) -> Literal:
@@ -985,32 +986,12 @@ class ListTransformer(TypeTransformer[T]):
         return False
 
     def to_literal(self, ctx: FlyteContext, python_val: T, python_type: Type[T], expected: LiteralType) -> Literal:
-        from flytekit.types.pickle import FlytePickle
-
-        if type(python_val) != list:
-            raise TypeTransformerFailedError("Expected a list")
-
-        if ListTransformer.is_batchable(python_type):
-            batchSize = len(python_val)  # default batch size
-            # parse annotated to get the number of items saved in a pickle file.
-            if get_origin(python_type) is Annotated:
-                for annotation in get_args(python_type)[1:]:
-                    if isinstance(annotation, int):
-                        batchSize = annotation
-                        break
-            
-            lit_list = [TypeEngine.to_literal(ctx, python_val[i : i + batchSize], FlytePickle, expected.collection_type) for i in range(0, len(python_val), batchSize)]  # type: ignore
-            logger.warning(f"ListTransformer: to_literal: python_val {python_val}\n")
-            logger.warning(f"ListTransformer: to_literal: lit_list {lit_list}\n")
-            logger.error(f"hi!!!!\n")
-            print("!!!!")
-            ccccc
-        else:
-            t = self.get_sub_type(python_type)
+        retun 0
             lit_list = [TypeEngine.to_literal(ctx, x, t, expected.collection_type) for x in python_val]  # type: ignore
         return Literal(collection=LiteralCollection(literals=lit_list))
 
     def to_python_value(self, ctx: FlyteContext, lv: Literal, expected_python_type: Type[T]) -> typing.List[typing.Any]:  # type: ignore
+        return 0
         from flytekit.types.pickle import FlytePickle
 
         try:
