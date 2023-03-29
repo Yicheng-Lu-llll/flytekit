@@ -1000,8 +1000,11 @@ class ListTransformer(TypeTransformer[T]):
                         break
             
             lit_list = [TypeEngine.to_literal(ctx, python_val[i : i + batchSize], FlytePickle, expected.collection_type) for i in range(0, len(python_val), batchSize)]  # type: ignore
-            logger.warning(f"ListTransformer: to_literal: python_val {python_val}")
-            logger.warning(f"ListTransformer: to_literal: lit_list {lit_list}")
+            logger.warning(f"ListTransformer: to_literal: python_val {python_val}\n")
+            logger.warning(f"ListTransformer: to_literal: lit_list {lit_list}\n")
+            logger.error(f"hi!!!!\n")
+            print("!!!!")
+            ccccc
         else:
             t = self.get_sub_type(python_type)
             lit_list = [TypeEngine.to_literal(ctx, x, t, expected.collection_type) for x in python_val]  # type: ignore
