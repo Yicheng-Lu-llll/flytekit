@@ -1013,7 +1013,7 @@ class ListTransformer(TypeTransformer[T]):
         if self.is_batchable(expected_python_type):
             from flytekit.types.pickle import FlytePickle
             batch_list = [TypeEngine.to_python_value(ctx, batch, FlytePickle) for batch in lits]
-            logger.warning(f"ListTransformer: to_python_value: lits {lits}")
+            logger.warning(f"hi!!!!!!!!!!!!!!!")
             logger.warning(f"ListTransformer: to_python_value: batch_list {batch_list}")
             logger.warning(f"ListTransformer: to_python_value: result {[item for batch in batch_list for item in batch]}")
             return [item for batch in batch_list for item in batch]
