@@ -29,7 +29,7 @@ from flytekit.models import types as type_models
 from flytekit.models.core import workflow as _workflow_model
 from flytekit.models.literals import Primitive
 from flytekit.models.types import SimpleType
-
+from flytekit.loggers import logger
 
 def translate_inputs_to_literals(
     ctx: FlyteContext,
@@ -96,7 +96,9 @@ def translate_inputs_to_literals(
             # directly call ListTransformer.to_literal to batch process the list items. This is necessary because processing
             # each list item separately could lead to errors since ListTransformer.to_python_value may treat the literal
             # as it is batched for batchable types.
+            logger.warning("check if batchable in promise.py")
             if ListTransformer.is_batchable(python_type):
+                logger.warning(f"{python_type} is batchable")
                 return TypeEngine.to_literal(ctx, input_val, python_type, lt)
             literal_list = [extract_value(ctx, v, sub_type, lt.collection_type) for v in input_val]
             return _literal_models.Literal(collection=_literal_models.LiteralCollection(literals=literal_list))
