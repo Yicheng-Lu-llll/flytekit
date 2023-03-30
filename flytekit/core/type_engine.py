@@ -1005,6 +1005,7 @@ class ListTransformer(TypeTransformer[T]):
         return Literal(collection=LiteralCollection(literals=lit_list))
 
     def to_python_value(self, ctx: FlyteContext, lv: Literal, expected_python_type: Type[T]) -> typing.List[typing.Any]:  # type: ignore
+        logger.warning(f"ListTransformer: to_python_value: lv {lv}")
         try:
             lits = lv.collection.literals
         except AttributeError:
