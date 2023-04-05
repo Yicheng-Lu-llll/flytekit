@@ -1,6 +1,7 @@
 import markdown
 import pandas
 import plotly.express as px
+from plotly.figure_factory import create_table
 from ydata_profiling import ProfileReport
 
 
@@ -47,4 +48,42 @@ class BoxRenderer:
 
     def to_html(self, df: pandas.DataFrame) -> str:
         fig = px.box(df, y=self._column_name)
+        return fig.to_html()
+
+
+class TableRenderer:
+    def to_html(self, df: pandas.DataFrame) -> str:
+        fig = create_table(df)
+        fig.update_layout(
+            autosize=True,
+        )
+        return fig.to_html()
+
+
+class GanttChartRenderer:
+    def to_html(self, df: pandas.DataFrame) -> str:
+
+        fig = px.timeline(df, x_start="Start", x_end="Finish", y="Part", color="Part")
+        fig.update_yaxes(autorange="reversed")
+        # fig.update_xaxes(tickformat="%S.%f")  # fig.update_yaxes(autorange="reversed")
+        time_dif = df["Finish"].max() - df["Start"].min()
+
+        if time_dif < pandas.Timedelta(seconds=1):
+            time_format = "%5f"
+        elif time_dif < pandas.Timedelta(minutes=1):
+            time_format = "%S:%f"
+        elif time_dif < pandas.Timedelta(hours=1):
+            time_format = "%M:%S:%f"
+        else:
+            time_format = "%H:%M:%S:%f"
+
+        fig.update_xaxes(
+            tickangle=90,
+            tickformat=time_format,
+        )
+
+        fig.update_layout(
+            autosize=True,
+        )
+
         return fig.to_html()
