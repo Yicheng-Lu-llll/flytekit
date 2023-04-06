@@ -266,6 +266,20 @@ class ExecutionParameters(object):
 
         return Deck("default")
 
+    @property
+    def time_line_deck(self) -> Deck:
+        from flytekit.deck.deck import TimeLineDeck
+
+        time_line_deck = None
+        for deck in self.decks:
+            if isinstance(deck, TimeLineDeck):
+                time_line_deck = deck
+                break
+        if time_line_deck is None:
+            time_line_deck = TimeLineDeck("time line")
+
+        return time_line_deck
+
     def __getattr__(self, attr_name: str) -> typing.Any:
         """
         This houses certain task specific context. For example in Spark, it houses the SparkSession, etc

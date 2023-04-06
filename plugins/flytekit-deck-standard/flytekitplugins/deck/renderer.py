@@ -62,24 +62,18 @@ class TableRenderer:
 
 class GanttChartRenderer:
     def to_html(self, df: pandas.DataFrame) -> str:
-
-        fig = px.timeline(df, x_start="Start", x_end="Finish", y="Part", color="Part")
-        fig.update_yaxes(autorange="reversed")
-        # fig.update_xaxes(tickformat="%S.%f")  # fig.update_yaxes(autorange="reversed")
-        time_dif = df["Finish"].max() - df["Start"].min()
-
-        if time_dif < pandas.Timedelta(seconds=1):
-            time_format = "%5f"
-        elif time_dif < pandas.Timedelta(minutes=1):
-            time_format = "%S:%f"
-        elif time_dif < pandas.Timedelta(hours=1):
-            time_format = "%M:%S:%f"
-        else:
-            time_format = "%H:%M:%S:%f"
+        print(df)
+        fig = px.timeline(df, x_start="Start", x_end="Finish", y="Name", color="Name")
 
         fig.update_xaxes(
             tickangle=90,
-            tickformat=time_format,
+            rangeslider_visible=True,
+            tickformatstops=[
+                dict(dtickrange=[None, 1], value="%3f ms"),
+                dict(dtickrange=[1, 60], value="%S:%3f s"),
+                dict(dtickrange=[60, 3600], value="%M:%S m"),
+                dict(dtickrange=[3600, None], value="%H:%M h"),
+            ],
         )
 
         fig.update_layout(

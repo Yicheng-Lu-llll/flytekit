@@ -93,9 +93,23 @@ class TimeLineDeck(Deck):
     def __init__(self, name: str, html: Optional[str] = ""):
         super().__init__(name, html)
         self.time_info = []
+        self.shift_time = pandas.Timedelta(microseconds=0)
 
     def append_time_info(self, info: dict):
         assert isinstance(info, dict)
+
+        millisecond = pandas.Timedelta(microseconds=1000)
+        # If the execution time of the wrapped code block is less than 1 millisecond, it will be rounded up to 1 millisecond for visualization purposes only.
+        # Additionally, all execution times after it will be shifted to avoid overlapping."
+        info["Start"] = info["Start"] + self.shift_time
+        info["Finish"] = info["Finish"] + self.shift_time
+
+        millisecond = pandas.Timedelta(microseconds=1000)
+        if info["Duration"] < millisecond:
+            self.shift_time += millisecond - info["Duration"]
+            info["Duration"] = millisecond
+            info["Finish"] = info["Start"] + millisecond
+
         self.time_info.append(info)
 
     @property
@@ -103,30 +117,34 @@ class TimeLineDeck(Deck):
         from flytekitplugins.deck.renderer import GanttChartRenderer, TableRenderer
 
         df = pandas.DataFrame(self.time_info)
-        return GanttChartRenderer().to_html(df) + "\n" + TableRenderer().to_html(df)
+        note = """
+<p><strong>Note:</strong></p>
+<ol>
+  <li>If the execution time of the wrapped code block is less than 1 millisecond, it will be rounded up to 1 millisecond for visualization purposes only.
+   Additionally, all execution times after it will be shifted to avoid overlapping.</li>
+  <li>Users can also measure the execution time of their own code. See here for more <a href="https://docs.flyte.org/projects/flytekit/en/latest/deck.html#measure-execution-time">details</a> (TODO: update the link).</li>
+</ol>
+        """
+        return GanttChartRenderer().to_html(df) + "\n" + TableRenderer().to_html(df) + "\n" + note
 
 
 @contextlib.contextmanager
-def measure_execution_time(part: str):
+def measure_execution_time(name: str):
     """
     A context manager that measures the execution time of the wrapped code block and
     appends the timing information to TimeLineDeck.
 
-    :param part: A string that describes the part of the task being executed.
+    :param name: A string that describes the part of the task being executed.
     """
     start_time = datetime.datetime.utcnow()
     try:
         yield
     finally:
         end_time = datetime.datetime.utcnow()
-        time_line_deck = None
-        for deck in FlyteContextManager.current_context().user_space_params.decks:
-            if deck.name == "time line of task":
-                time_line_deck = deck
-                break
-        if time_line_deck is None:
-            time_line_deck = TimeLineDeck("time line of task")
-        time_line_deck.append_time_info(dict(Part=part, Start=start_time, Finish=end_time))
+        time_line_deck = FlyteContextManager.current_context().user_space_params.time_line_deck
+        time_line_deck.append_time_info(
+            dict(Name=name, Start=start_time, Finish=end_time, Duration=end_time - start_time)
+        )
 
 
 def _ipython_check() -> bool:
