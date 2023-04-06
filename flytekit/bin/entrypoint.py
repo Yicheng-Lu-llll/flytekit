@@ -342,6 +342,7 @@ def _execute_task(
         dynamic_addl_distro,
         dynamic_dest_dir,
     ) as ctx:
+        print("hi!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         resolver_obj = load_object_from_module(resolver)
         # Use the resolver to load the actual task object
         _task_def = resolver_obj.load_task(loader_args=resolver_args)

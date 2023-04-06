@@ -116,6 +116,9 @@ class TimeLineDeck(Deck):
     def html(self) -> str:
         from flytekitplugins.deck.renderer import GanttChartRenderer, TableRenderer
 
+        if len(self.time_info) == 0:
+            return ""
+
         df = pandas.DataFrame(self.time_info)
         note = """
 <p><strong>Note:</strong></p>
