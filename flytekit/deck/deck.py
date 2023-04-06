@@ -187,6 +187,7 @@ def _output_deck(task_name: str, new_user_params: ExecutionParameters):
     with open(deck_path, "w") as f:
         f.write(_get_deck(new_user_params, ignore_jupyter=True))
     logger.info(f"{task_name} task creates flyte deck html to file://{deck_path}")
+    print(f"{task_name} task creates flyte deck html to file://{deck_path}")
 
 
 root = os.path.dirname(os.path.abspath(__file__))
