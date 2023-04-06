@@ -245,6 +245,7 @@ class Task(object):
         #  Promises as essentially inputs from previous task executions
         #  native constants are just bound to this specific task (default values for a task input)
         #  Also along with promises and constants, there could be dictionary or list of promises or constants
+        print("!!!Task:local_execute!!!")
         kwargs = translate_inputs_to_literals(
             ctx,
             incoming_values=kwargs,
@@ -340,6 +341,7 @@ class Task(object):
         """
         Call dispatch_execute, in the context of a local sandbox execution. Not invoked during runtime.
         """
+        print("!!!Task:sandbox_execute!!!")
         es = cast(ExecutionState, ctx.execution_state)
         b = cast(ExecutionParameters, es.user_space_params).with_task_sandbox()
         ctx = ctx.current_context().with_execution_state(es.with_params(user_space_params=b.build())).build()
@@ -501,7 +503,7 @@ class PythonTask(TrackedInstance, Task, Generic[T]):
           may be none
         * ``DynamicJobSpec`` is returned when a dynamic workflow is executed
         """
-
+        print(f"!!!in PythonTask: dispatch_execute!!!")
         # Invoked before the task is executed
         new_user_params = self.pre_execute(ctx.user_space_params)
         from flytekit.deck.deck import _output_deck
@@ -519,9 +521,12 @@ class PythonTask(TrackedInstance, Task, Generic[T]):
 
             # TODO: Logger should auto inject the current context information to indicate if the task is running within
             #   a workflow or a subworkflow etc
+            
             logger.info(f"Invoking {self.name} with inputs: {native_inputs}")
             try:
+                print("!!!in PythonTask: dispatch_execute: going to execute!!!")
                 native_outputs = self.execute(**native_inputs)
+                print("!!!in PythonTask: dispatch_execute: finsh execute!!!")
             except Exception as e:
                 logger.exception(f"Exception when executing {e}")
                 raise e

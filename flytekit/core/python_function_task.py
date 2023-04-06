@@ -143,6 +143,7 @@ class PythonFunctionTask(PythonAutoContainerTask[T]):  # type: ignore
                     "or functools.update_wrapper on the function wrapper. "
                     "Alternatively if you want to create your own tasks with custom behavior use the TaskResolverMixin"
                 )
+        print("!!! In PythonFunctionTask init: task_function!!!")
         self._task_function = task_function
         self._execution_mode = execution_mode
         self._wf = None  # For dynamic tasks
@@ -160,8 +161,9 @@ class PythonFunctionTask(PythonAutoContainerTask[T]):  # type: ignore
         This method will be invoked to execute the task. If you do decide to override this method you must also
         handle dynamic tasks or you will no longer be able to use the task as a dynamic task generator.
         """
-        print("!!!execute!!!")
+        print("!!!In PythonFunctionTask:execute!!!")
         if self.execution_mode == self.ExecutionBehavior.DEFAULT:
+            print("!!!In PythonFunctionTask: going to enter user code!!!")
             return exception_scopes.user_entry_point(self._task_function)(**kwargs)
         elif self.execution_mode == self.ExecutionBehavior.DYNAMIC:
             return self.dynamic_execute(self._task_function, **kwargs)
