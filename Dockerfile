@@ -27,7 +27,7 @@
 
 # Dockerfile
 
-FROM  cr.flyte.org/flyteorg/flytekit:py3.10-1.4.1
+FROM  cr.flyte.org/flyteorg/flytekit:py3.10-1.5.0
 
 USER root
 
