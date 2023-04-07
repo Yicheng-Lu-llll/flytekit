@@ -34,3 +34,4 @@ USER root
 RUN apt-get install git -y
 
 RUN pip install -U git+https://github.com/Yicheng-Lu-llll/flytekit.git@testvisualization
+

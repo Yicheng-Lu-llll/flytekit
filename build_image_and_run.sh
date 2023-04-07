@@ -8,6 +8,6 @@ export FLYTE_INTERNAL_IMAGE="yichenglu/flytekit:test_visualization"
 docker build --no-cache -t  "${FLYTE_INTERNAL_IMAGE}" .
 docker push ${FLYTE_INTERNAL_IMAGE}
 pyflyte run --image ${FLYTE_INTERNAL_IMAGE} --remote ./test.py  wf
-pyflyte run  --remote ./test.py  wf
+
 
 git add . && git commit -s -m "test" && git push origin testvisualization
