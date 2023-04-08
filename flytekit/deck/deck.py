@@ -114,11 +114,11 @@ class TimeLineDeck(Deck):
 
     @property
     def html(self) -> str:
-        from flytekitplugins.deck.renderer import GanttChartRenderer, TableRenderer
+        
 
         if len(self.time_info) == 0:
             return ""
-
+        print(df)
         df = pandas.DataFrame(self.time_info)
         note = """
 <p><strong>Note:</strong></p>
@@ -129,6 +129,7 @@ class TimeLineDeck(Deck):
   <li>Users can also measure the execution time of their own code. See here for more <a href="https://docs.flyte.org/projects/flytekit/en/latest/deck.html#measure-execution-time">details</a>. (TODO: update the link).</li>
 </ol>
         """
+        from flytekitplugins.deck.renderer import GanttChartRenderer, TableRenderer
         return GanttChartRenderer().to_html(df) + "\n" + TableRenderer().to_html(df) + "\n" + note
 
 
