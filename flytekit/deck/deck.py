@@ -118,8 +118,9 @@ class TimeLineDeck(Deck):
 
         if len(self.time_info) == 0:
             return ""
-        print(df)
+        
         df = pandas.DataFrame(self.time_info)
+        print(df)
         note = """
 <p><strong>Note:</strong></p>
 <ol>
