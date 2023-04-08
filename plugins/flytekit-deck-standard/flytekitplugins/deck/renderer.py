@@ -1,6 +1,7 @@
 import markdown
 import pandas
 import plotly.express as px
+from plotly.figure_factory import create_table
 from ydata_profiling import ProfileReport
 
 
@@ -47,4 +48,43 @@ class BoxRenderer:
 
     def to_html(self, df: pandas.DataFrame) -> str:
         fig = px.box(df, y=self._column_name)
+        return fig.to_html()
+
+
+class TableRenderer:
+    def to_html(self, df: pandas.DataFrame) -> str:
+        fig = create_table(df)
+        fig.update_layout(
+            autosize=True,
+        )
+        return fig.to_html()
+
+
+class GanttChartRenderer:
+    """
+    This renderer is primarily used by the timeline deck. The input DataFrame should
+    have at least the following columns:
+    - "Start": datetime.datetime (represents the start time)
+    - "Finish": datetime.datetime (represents the end time)
+    - "Name": string (the name of the task or event)
+    """
+
+    def to_html(self, df: pandas.DataFrame) -> str:
+        fig = px.timeline(df, x_start="Start", x_end="Finish", y="Name", color="Name")
+
+        fig.update_xaxes(
+            tickangle=90,
+            rangeslider_visible=True,
+            tickformatstops=[
+                dict(dtickrange=[None, 1], value="%3f ms"),
+                dict(dtickrange=[1, 60], value="%S:%3f s"),
+                dict(dtickrange=[60, 3600], value="%M:%S m"),
+                dict(dtickrange=[3600, None], value="%H:%M h"),
+            ],
+        )
+
+        fig.update_layout(
+            autosize=True,
+        )
+
         return fig.to_html()
