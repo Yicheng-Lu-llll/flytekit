@@ -1,7 +1,9 @@
+import datetime
 import os
 import typing
 from typing import Optional
 
+import pandas
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from flytekit.core.context_manager import ExecutionParameters, ExecutionState, FlyteContext, FlyteContextManager
@@ -9,6 +11,7 @@ from flytekit.loggers import logger
 
 OUTPUT_DIR_JUPYTER_PREFIX = "jupyter"
 DECK_FILE_NAME = "deck.html"
+
 
 try:
     from IPython.core.display import HTML
@@ -77,6 +80,56 @@ class Deck:
     @property
     def html(self) -> str:
         return self._html
+
+
+class TimeLineDeck(Deck):
+    """
+    The TimeLineDeck class is designed to render the execution time of each part of a task.
+    Unlike deck classe, the conversion of data to HTML is delayed until the html property is accessed.
+    This approach is taken because rendering a timeline graph with partial data would not provide meaningful insights.
+    Instead, the complete data set is used to create a comprehensive visualization of the execution time of each part of the task.
+    """
+
+    def __init__(self, name: str, html: Optional[str] = ""):
+        super().__init__(name, html)
+        self.time_info = []
+        self.shift_time = datetime.timedelta(microseconds=0)
+
+    def append_time_info(self, info: dict):
+        assert isinstance(info, dict)
+
+        # If the execution time of the wrapped code block is less than 1 millisecond, it will be rounded up to 1 millisecond for visualization purposes only.
+        # Additionally, all execution times after it will be shifted to avoid overlapping."
+        info["Start"] = info["Start"] + self.shift_time
+        info["Finish"] = info["Finish"] + self.shift_time
+
+        millisecond = datetime.timedelta(microseconds=1000)
+        duration = info["Finish"] - info["Start"]
+        if duration < millisecond:
+            self.shift_time += millisecond - duration
+            duration = millisecond
+            info["Finish"] = info["Start"] + millisecond
+
+        self.time_info.append(info)
+
+    @property
+    def html(self) -> str:
+        from flytekitplugins.deck.renderer import GanttChartRenderer, TableRenderer
+
+        if len(self.time_info) == 0:
+            return ""
+
+        df = pandas.DataFrame(self.time_info)
+        note = """
+<p><strong>Note:</strong></p>
+<ol>
+  <li>If the execution time (end time - start time) is less than 1 millisecond, it will be rounded up to 1 millisecond for visualization purposes only.
+  To prevent overlapping, all subsequent execution times will be shifted accordingly.
+  For accurate execution time measurements, users should refer to wall time and process time.</li>
+  <li>Users can also measure the execution time of their own code. See here for more <a href="https://docs.flyte.org/projects/flytekit/en/latest/deck.html#measure-execution-time">details</a>. (TODO: update the link).</li>
+</ol>
+        """
+        return GanttChartRenderer().to_html(df) + "\n" + TableRenderer().to_html(df) + "\n" + note
 
 
 def _ipython_check() -> bool:
