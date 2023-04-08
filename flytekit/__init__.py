@@ -292,7 +292,10 @@ def load_implicit_plugins():
     """
     discovered_plugins = entry_points(group="flytekit.plugins")
     for p in discovered_plugins:
-        p.load()
+       try:
+           p.load()
+       except Exception:
+           pass  # Ignore all exceptions
 
 
 # Load all implicit plugins
