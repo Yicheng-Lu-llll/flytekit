@@ -295,6 +295,7 @@ def load_implicit_plugins():
        try:
            p.load()
        except Exception:
+           print(Exception)
            pass  # Ignore all exceptions
 
 
