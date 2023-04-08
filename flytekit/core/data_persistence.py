@@ -33,7 +33,6 @@ from fsspec.utils import get_protocol
 
 from flytekit import configuration
 from flytekit.configuration import DataConfig
-from flytekit.core.utils import PerformanceTimer
 from flytekit.exceptions.user import FlyteAssertion
 from flytekit.interfaces.random import random
 from flytekit.loggers import logger
@@ -296,9 +295,9 @@ class FileAccessProvider(object):
         :param is_multipart:
         """
         try:
-            with PerformanceTimer(f"Copying ({remote_path} -> {local_path})"):
-                pathlib.Path(local_path).parent.mkdir(parents=True, exist_ok=True)
-                self.get(remote_path, to_path=local_path, recursive=is_multipart)
+           
+             pathlib.Path(local_path).parent.mkdir(parents=True, exist_ok=True)
+             self.get(remote_path, to_path=local_path, recursive=is_multipart)
         except Exception as ex:
             raise FlyteAssertion(
                 f"Failed to get data from {remote_path} to {local_path} (recursive={is_multipart}).\n\n"
@@ -315,8 +314,7 @@ class FileAccessProvider(object):
         :param is_multipart:
         """
         try:
-            with PerformanceTimer(f"Writing ({local_path} -> {remote_path})"):
-                self.put(cast(str, local_path), remote_path, recursive=is_multipart)
+            self.put(cast(str, local_path), remote_path, recursive=is_multipart)
         except Exception as ex:
             raise FlyteAssertion(
                 f"Failed to put data from {local_path} to {remote_path} (recursive={is_multipart}).\n\n"
