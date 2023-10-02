@@ -35,4 +35,5 @@ class RayAgent(AgentBase):
         return DeleteTaskResponse()
 
 # To register the custom agent
+print("register!!!!!!!!!!!!!")
 AgentRegistry.register(RayAgent())
