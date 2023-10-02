@@ -55,21 +55,21 @@ class RayFunctionTask(AsyncAgentExecutorMixin, PythonFunctionTask):
         print("pre_execute")
         return user_params
 
-    def execute(self, **kwargs) -> Any:
-        print("execute")
-        func = super().execute
+    # def execute(self, **kwargs) -> Any:
+    #     print("execute")
+    #     func = super().execute
 
-        # Running user code in an existing Ray cluster, the Flyte task will be transformed into a Ray task.
-        if self._task_config.address:
-            @ray.remote
-            def ray_task():
-                return func(**kwargs)
-            return ray.get(ray_task.remote())
+    #     # Running user code in an existing Ray cluster, the Flyte task will be transformed into a Ray task.
+    #     if self._task_config.address:
+    #         @ray.remote
+    #         def ray_task():
+    #             return func(**kwargs)
+    #         return ray.get(ray_task.remote())
 
-        # Running user code in a ephemeral Ray cluster, the Flyte task will be considered as a driver program in Ray.
-        # This means the user needs to create a Ray task/actor within the Flyte task.
-        else:
-            return func(**kwargs)
+    #     # Running user code in a ephemeral Ray cluster, the Flyte task will be considered as a driver program in Ray.
+    #     # This means the user needs to create a Ray task/actor within the Flyte task.
+    #     else:
+    #         return func(**kwargs)
 
 
     def post_execute(self, user_params: ExecutionParameters, rval: Any) -> Any:

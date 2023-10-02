@@ -20,4 +20,4 @@ def ray_task() -> int:
 def ray_workflow() -> int:
     return ray_task()
 
-# pyflyte run /home/ubuntu/flyte/flytekit/test.py ray_workflow --version 10
+# pyflyte run /home/ubuntu/flyte/flytekit/test.py ray_workflow
