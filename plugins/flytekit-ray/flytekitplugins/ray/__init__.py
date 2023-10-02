@@ -13,3 +13,4 @@ This package contains things that are useful when extending Flytekit.
 """
 
 from .task import HeadNodeConfig, RayJobConfig, WorkerNodeConfig
+from .agent import RayAgent
