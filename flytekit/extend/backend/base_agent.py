@@ -165,6 +165,7 @@ class AsyncAgentExecutorMixin:
     _entity = None
 
     def execute(self, **kwargs) -> typing.Any:
+        print("AsyncAgentExecutorMixin: execute")
         from flytekit.tools.translator import get_serializable
 
         self._entity = typing.cast(PythonTask, self)
@@ -182,6 +183,7 @@ class AsyncAgentExecutorMixin:
     async def _create(
         self, task_template: TaskTemplate, inputs: typing.Dict[str, typing.Any] = None
     ) -> CreateTaskResponse:
+        print("AsyncAgentExecutorMixin: _create")
         ctx = FlyteContext.current_context()
         grpc_ctx = _get_grpc_context()
 

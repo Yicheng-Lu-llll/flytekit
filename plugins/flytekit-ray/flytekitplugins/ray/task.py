@@ -3,6 +3,7 @@ import json
 import typing
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, Optional
+from flytekit.extend.backend.base_agent import AsyncAgentExecutorMixin
 
 import ray
 from flytekitplugins.ray.models import HeadGroupSpec, RayCluster, RayJob, WorkerGroupSpec
@@ -36,7 +37,7 @@ class RayJobConfig:
     address: typing.Optional[str] = None
 
 
-class RayFunctionTask(PythonFunctionTask):
+class RayFunctionTask(AsyncAgentExecutorMixin, PythonFunctionTask):
     """
     Actual Plugin that transforms the local python code for execution within Ray job.
     """
@@ -46,10 +47,30 @@ class RayFunctionTask(PythonFunctionTask):
     def __init__(self, task_config: RayJobConfig, task_function: Callable, **kwargs):
         super().__init__(task_config=task_config, task_type=self._RAY_TASK_TYPE, task_function=task_function, **kwargs)
         self._task_config = task_config
+        print("RayFunctionTask")
 
     def pre_execute(self, user_params: ExecutionParameters) -> ExecutionParameters:
-        ray.init(address=self._task_config.address)
+        print("start connecting")
+        # ray.init(address=self._task_config.address)
+        print("pre_execute")
         return user_params
+
+    def execute(self, **kwargs) -> Any:
+        print("execute")
+        func = super().execute
+
+        # Running user code in an existing Ray cluster, the Flyte task will be transformed into a Ray task.
+        if self._task_config.address:
+            @ray.remote
+            def ray_task():
+                return func(**kwargs)
+            return ray.get(ray_task.remote())
+
+        # Running user code in a ephemeral Ray cluster, the Flyte task will be considered as a driver program in Ray.
+        # This means the user needs to create a Ray task/actor within the Flyte task.
+        else:
+            return func(**kwargs)
+
 
     def post_execute(self, user_params: ExecutionParameters, rval: Any) -> Any:
         ray.shutdown()
