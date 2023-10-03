@@ -13,6 +13,7 @@ from flytekit.models.task import TaskTemplate
 
 @dataclass
 class Metadata:
+    run_id: str
 
 
 class RayAgent(AgentBase):
