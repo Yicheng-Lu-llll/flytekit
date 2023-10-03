@@ -24,11 +24,11 @@ class RayAgent(AgentBase):
     ) -> TaskCreateResponse:
         print(__name__)
 
-        return CreateTaskResponse(resource_meta=json.dumps(asdict(Metadata(job_id=1))).encode("utf-8"))
+        return CreateTaskResponse()
 
     async def async_get(self, context: grpc.ServicerContext, resource_meta: bytes) -> TaskGetResponse:
 
-        return GetTaskResponse(resource=Resource(state="SUCCEEDED"))
+        return GetTaskResponse()
 
     async def async_delete(self, context: grpc.ServicerContext, resource_meta: bytes) -> TaskDeleteResponse:
         return DeleteTaskResponse()
