@@ -28,7 +28,6 @@ class RayAgent(AgentBase):
 
     async def async_get(self, context: grpc.ServicerContext, resource_meta: bytes) -> TaskGetResponse:
 
-
         return GetTaskResponse(resource=Resource(state="SUCCEEDED"))
 
     async def async_delete(self, context: grpc.ServicerContext, resource_meta: bytes) -> TaskDeleteResponse:
